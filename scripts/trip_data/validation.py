@@ -725,7 +725,7 @@ def _validate_schedule(
                 column="Date",
             )
         elif valid_date and trip_bounds and not (
-            trip_bounds[0] <= schedule_date <= trip_bounds[1]
+            trip_bounds[0] <= schedule_date < trip_bounds[1]
         ):
             report.add(
                 "error",

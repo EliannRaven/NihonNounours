@@ -232,6 +232,35 @@ def test_blank_schedule_reference_is_accepted(tmp_path: Path) -> None:
     assert "UNKNOWN_REFERENCE_PREFIX" not in codes(report)
 
 
+def test_schedule_on_inclusive_trip_start_is_accepted(tmp_path: Path) -> None:
+    report = validate_temp(tmp_path)
+
+    assert "SCHEDULE_DATE_OUT_OF_RANGE" not in codes(report)
+
+
+def test_schedule_on_day_before_exclusive_trip_end_is_accepted(
+    tmp_path: Path,
+) -> None:
+    def mutate(values: SheetValues) -> None:
+        headers, rows = values["Schedule"]
+        rows[0][headers.index("Date")] = date(2026, 9, 2)
+
+    report = validate_temp(tmp_path, mutate)
+
+    assert "SCHEDULE_DATE_OUT_OF_RANGE" not in codes(report)
+    assert report.error_count == 0
+
+
+def test_schedule_on_exclusive_trip_end_is_out_of_range(tmp_path: Path) -> None:
+    def mutate(values: SheetValues) -> None:
+        headers, rows = values["Schedule"]
+        rows[0][headers.index("Date")] = date(2026, 9, 3)
+
+    report = validate_temp(tmp_path, mutate)
+
+    assert "SCHEDULE_DATE_OUT_OF_RANGE" in codes(report, "error")
+
+
 def test_unknown_reference_prefix_is_rejected(tmp_path: Path) -> None:
     def mutate(values: SheetValues) -> None:
         headers, rows = values["Schedule"]

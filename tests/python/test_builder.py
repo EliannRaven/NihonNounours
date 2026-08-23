@@ -240,6 +240,20 @@ def test_validation_errors_prevent_output(tmp_path: Path) -> None:
     assert not output.exists()
 
 
+def test_exclusive_end_schedule_blocks_build_without_writing_output(
+    tmp_path: Path,
+) -> None:
+    def mutate(values: SheetValues) -> None:
+        headers, rows = values["Schedule"]
+        rows[0][headers.index("Date")] = date(2026, 9, 4)
+
+    path = write_workbook(tmp_path, mutate)
+    output = tmp_path / "trip.json"
+
+    assert build_cli.main([str(path), "--output", str(output)]) == 1
+    assert not output.exists()
+
+
 def test_existing_output_is_not_overwritten_when_validation_fails(
     tmp_path: Path,
 ) -> None:
