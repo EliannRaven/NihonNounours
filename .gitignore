@@ -215,3 +215,11 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,react,python
+
+# Node and Vite generated files
+node_modules/
+dist/
+coverage/
+*.local
+.env.*
+!.env.example
