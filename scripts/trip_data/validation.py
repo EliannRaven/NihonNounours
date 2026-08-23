@@ -103,6 +103,12 @@ ID_PATTERNS: Final = {
     "Transport_ID": re.compile(r"^TRA\d+$"),
 }
 
+TRANSPORT_MEANINGFUL_COLUMNS: Final = tuple(
+    column
+    for column in REQUIRED_SCHEMAS["Transport"]
+    if column != "Stage_Order"
+)
+
 
 @dataclass(frozen=True)
 class ValidationIssue:
@@ -183,6 +189,12 @@ def _is_time(value: object | None) -> bool:
 
 def _has_any_value(row: WorkbookRow, columns: tuple[str, ...]) -> bool:
     return any(row.get(column) is not None for column in columns)
+
+
+def is_meaningful_transport_row(row: WorkbookRow) -> bool:
+    """Return whether a row contains actual Transport entity information."""
+
+    return _has_any_value(row, TRANSPORT_MEANINGFUL_COLUMNS)
 
 
 def _validate_schema(data: WorkbookData, report: ValidationReport) -> set[str]:
@@ -555,14 +567,8 @@ def _validate_transport(
     id_registry_available = sheet.has_column("Transport_ID")
     seen_ids: set[str] = set()
     valid_ids: set[str] = set()
-    entity_columns = tuple(
-        column
-        for column in REQUIRED_SCHEMAS["Transport"]
-        if column != "Stage_Order"
-    )
-
     for row in sheet.rows:
-        if not _has_any_value(row, entity_columns):
+        if not is_meaningful_transport_row(row):
             continue
 
         identifier = row.get("Transport_ID")
