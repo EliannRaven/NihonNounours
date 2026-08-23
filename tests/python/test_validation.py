@@ -385,6 +385,112 @@ def test_missing_transport_id_avoids_cascaded_tra_reference_error(
     assert "BROKEN_REFERENCE" not in codes(report)
 
 
+def test_missing_activity_id_avoids_cascaded_act_reference_error(
+    tmp_path: Path,
+) -> None:
+    def mutate(values: SheetValues) -> None:
+        remove_column(values, "Activities", "Activity_ID")
+        headers, rows = values["Schedule"]
+        rows[0][headers.index("Reference")] = "ACT001"
+
+    report = validate_temp(tmp_path, mutate)
+
+    assert any(
+        issue.code == "MISSING_COLUMN" and issue.column == "Activity_ID"
+        for issue in report.errors
+    )
+    assert "BROKEN_REFERENCE" not in codes(report)
+
+
+def test_missing_food_id_avoids_cascaded_fod_reference_error(
+    tmp_path: Path,
+) -> None:
+    def mutate(values: SheetValues) -> None:
+        remove_column(values, "Food", "Food_ID")
+        headers, rows = values["Schedule"]
+        rows[0][headers.index("Reference")] = "FOD001"
+
+    report = validate_temp(tmp_path, mutate)
+
+    assert any(
+        issue.code == "MISSING_COLUMN" and issue.column == "Food_ID"
+        for issue in report.errors
+    )
+    assert "BROKEN_REFERENCE" not in codes(report)
+
+
+@pytest.mark.parametrize("notes_header", ["Our Notes", "Our_Notes"])
+def test_transport_notes_alone_remain_a_placeholder(
+    tmp_path: Path,
+    notes_header: str,
+) -> None:
+    def mutate(values: SheetValues) -> None:
+        headers, rows = values["Transport"]
+        headers.append(notes_header)
+        placeholder = [None] * len(headers)
+        placeholder[headers.index("Stage_Order")] = 1
+        placeholder[headers.index(notes_header)] = "To be completed later"
+        rows.append(placeholder)
+
+    report = validate_temp(tmp_path, mutate)
+
+    assert not any(issue.row == 3 for issue in report.errors)
+
+
+def test_real_transport_information_remains_meaningful(tmp_path: Path) -> None:
+    def mutate(values: SheetValues) -> None:
+        headers, rows = values["Transport"]
+        transport = [None] * len(headers)
+        transport[headers.index("Stage_Order")] = 1
+        transport[headers.index("Service")] = "Local service"
+        rows.append(transport)
+
+    report = validate_temp(tmp_path, mutate)
+
+    assert any(
+        issue.row == 3
+        and issue.code == "MISSING_REQUIRED_VALUE"
+        and issue.column == "Transport_ID"
+        for issue in report.errors
+    )
+
+
+def test_schedule_reference_type_mismatch_is_a_warning(tmp_path: Path) -> None:
+    def mutate(values: SheetValues) -> None:
+        headers, rows = values["Schedule"]
+        rows[0][headers.index("Type")] = " food "
+        rows[0][headers.index("Reference")] = "ACT001"
+
+    report = validate_temp(tmp_path, mutate)
+
+    assert "REFERENCE_TYPE_MISMATCH" in codes(report, "warning")
+    assert report.error_count == 0
+
+
+@pytest.mark.parametrize(
+    ("schedule_type", "reference"),
+    [
+        ("Activity", "ACT001"),
+        ("Food", "FOD001"),
+        ("Transport", "TRA001"),
+    ],
+)
+def test_matching_schedule_reference_type_has_no_warning(
+    tmp_path: Path,
+    schedule_type: str,
+    reference: str,
+) -> None:
+    def mutate(values: SheetValues) -> None:
+        headers, rows = values["Schedule"]
+        rows[0][headers.index("Type")] = schedule_type
+        rows[0][headers.index("Reference")] = reference
+
+    report = validate_temp(tmp_path, mutate)
+
+    assert "REFERENCE_TYPE_MISMATCH" not in codes(report)
+    assert report.error_count == 0
+
+
 def test_duplicate_trimmed_headers_are_detected(tmp_path: Path) -> None:
     def mutate(values: SheetValues) -> None:
         headers, rows = values["Activities"]

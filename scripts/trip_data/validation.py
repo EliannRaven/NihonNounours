@@ -559,7 +559,7 @@ def _validate_transport(
         column
         for column in REQUIRED_SCHEMAS["Transport"]
         if column != "Stage_Order"
-    ) + ("Our Notes",)
+    )
 
     for row in sheet.rows:
         if not _has_any_value(row, entity_columns):
@@ -680,6 +680,8 @@ def _validate_schedule(
     activity_ids: set[str],
     food_ids: set[str],
     transport_ids: set[str],
+    activity_registry_available: bool,
+    food_registry_available: bool,
     transport_registry_available: bool,
 ) -> None:
     if sheet is None:
@@ -689,6 +691,19 @@ def _validate_schedule(
         "ACT": activity_ids,
         "FOD": food_ids,
         "TRA": transport_ids,
+    }
+    registry_availability = {
+        "ACT": activity_registry_available,
+        "FOD": food_registry_available,
+        "TRA": transport_registry_available,
+    }
+    expected_types = {
+        "ACT": "Activity",
+        "FOD": "Food",
+        "TRA": "Transport",
+    }
+    recognized_types = {
+        expected_type.casefold() for expected_type in expected_types.values()
     }
 
     for row in sheet.rows:
@@ -797,9 +812,27 @@ def _validate_schedule(
                 row=row.number,
                 column="Reference",
             )
-        elif prefix == "TRA" and not transport_registry_available:
             continue
-        elif reference not in registries[prefix]:
+
+        schedule_type = row.get("Type")
+        expected_type = expected_types[prefix]
+        if (
+            isinstance(schedule_type, str)
+            and schedule_type.strip().casefold() in recognized_types
+            and schedule_type.strip().casefold() != expected_type.casefold()
+        ):
+            report.add(
+                "warning",
+                "REFERENCE_TYPE_MISMATCH",
+                f"Schedule Type conflicts with the {prefix} reference type",
+                sheet.name,
+                row=row.number,
+                column="Type",
+            )
+
+        if not registry_availability[prefix]:
+            continue
+        if reference not in registries[prefix]:
             report.add(
                 "error",
                 "BROKEN_REFERENCE",
@@ -824,15 +857,24 @@ def validate_data(data: WorkbookData) -> ValidationReport:
         and "Stages.End_Date" not in missing_columns
     )
 
+    activities_sheet = data.get_sheet("Activities")
+    activity_registry_available = (
+        activities_sheet is not None
+        and activities_sheet.has_column("Activity_ID")
+    )
     activity_ids = _validate_named_entities(
-        data.get_sheet("Activities"),
+        activities_sheet,
         report,
         id_column="Activity_ID",
         name_column="Activity_Name",
         duration_column="Duration_Min",
     )
+    food_sheet = data.get_sheet("Food")
+    food_registry_available = (
+        food_sheet is not None and food_sheet.has_column("Food_ID")
+    )
     food_ids = _validate_named_entities(
-        data.get_sheet("Food"),
+        food_sheet,
         report,
         id_column="Food_ID",
         name_column="Food_Name",
@@ -856,6 +898,8 @@ def validate_data(data: WorkbookData) -> ValidationReport:
         activity_ids=activity_ids,
         food_ids=food_ids,
         transport_ids=transport_ids,
+        activity_registry_available=activity_registry_available,
+        food_registry_available=food_registry_available,
         transport_registry_available=transport_registry_available,
     )
     return report
