@@ -77,9 +77,9 @@ python -m pytest
 ```
 
 Validation errors prevent JSON generation. Warnings identify incomplete or
-suspicious data that remains usable and do not block generation. The current
-workbook may intentionally fail validation until its known data issues have
-been corrected, so a production `src/data/trip.json` may not exist yet.
+suspicious data that remains usable and do not block generation.
+`src/data/trip.json` is generated from `data/InputData_v2.xlsx` and must not be
+edited manually.
 
 ## Directory structure
 
