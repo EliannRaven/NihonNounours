@@ -50,6 +50,31 @@ Run ESLint:
 npm run lint
 ```
 
+## Python data validation
+
+Install the Python runtime and development dependencies:
+
+```bash
+python -m pip install -r requirements-dev.txt
+```
+
+Validate the editable Excel source of truth:
+
+```bash
+python -m scripts.validate_trip_data
+```
+
+Run the Python test suite:
+
+```bash
+python -m pytest
+```
+
+Validation errors prevent the future data build from running safely. Warnings
+identify incomplete or suspicious data that remains usable but deserves
+attention. The current workbook may intentionally fail validation until its
+known data issues have been corrected.
+
 ## Directory structure
 
 ```text
@@ -60,6 +85,10 @@ src/
   styles/           Global styling foundation
   App.tsx            Application root
   main.tsx           Browser entry point
+scripts/
+  trip_data/         Reusable Excel reader and validation rules
+  validate_trip_data.py
+tests/python/        Python validation tests
 ```
 
 ## Data architecture
