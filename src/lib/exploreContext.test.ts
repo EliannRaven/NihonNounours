@@ -104,7 +104,9 @@ describe('Explore URL contract', () => {
 
   it('does not invent category when switching Activities to Food', () => {
     const params = switchExploreMode(
-      new URLSearchParams('mode=activities&city=Kamakura&area=Hase'),
+      new URLSearchParams(
+        'mode=activities&city=Kamakura&area=Hase&weather=sunny&time=under-1h&favorites=1&future=kept',
+      ),
       'food',
     )
 
@@ -112,5 +114,9 @@ describe('Explore URL contract', () => {
     expect(params.get('city')).toBe('Kamakura')
     expect(params.get('area')).toBe('Hase')
     expect(params.has('category')).toBe(false)
+    expect(params.has('weather')).toBe(false)
+    expect(params.has('time')).toBe(false)
+    expect(params.has('favorites')).toBe(false)
+    expect(params.get('future')).toBe('kept')
   })
 })

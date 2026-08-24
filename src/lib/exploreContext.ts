@@ -2,6 +2,16 @@ import type { DiscoveryMetadata } from '../types/trip'
 
 export type ExploreMode = 'activities' | 'food'
 
+export const exploreParameterKeys = [
+  'mode',
+  'city',
+  'area',
+  'category',
+  'weather',
+  'time',
+  'favorites',
+] as const
+
 export interface ExploreContext {
   mode: ExploreMode
   city: string | null
@@ -70,7 +80,7 @@ export function switchExploreMode(
           area: currentContext.area,
         }
   const nextParams = new URLSearchParams(searchParams)
-  for (const key of ['mode', 'city', 'area', 'category']) {
+  for (const key of exploreParameterKeys) {
     nextParams.delete(key)
   }
   buildExploreSearchParams(discovery).forEach((value, key) => {

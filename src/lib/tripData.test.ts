@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   getActivitiesForCity,
   getActivity,
+  getAllActivities,
   getAllDays,
   getAllStages,
   getDay,
@@ -165,6 +166,14 @@ describe('entity selectors', () => {
 })
 
 describe('collection selectors', () => {
+  it('returns a new Activity registry array', () => {
+    const activities = getAllActivities()
+    const activityCount = activities.length
+    activities.pop()
+
+    expect(getAllActivities()).toHaveLength(activityCount)
+  })
+
   it('filters Activities by trimmed case-insensitive city', () => {
     const activities = getActivitiesForCity('  kAmAkUrA ')
 

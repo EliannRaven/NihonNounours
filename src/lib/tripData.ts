@@ -89,6 +89,10 @@ export function getActivity(id: string): Activity | undefined {
   return getRecordValue(tripData.activities, id)
 }
 
+export function getAllActivities(): Activity[] {
+  return Object.values(tripData.activities)
+}
+
 export function getFood(id: string): Food | undefined {
   return getRecordValue(tripData.food, id)
 }
