@@ -1,0 +1,314 @@
+.trip-page {
+  display: grid;
+  gap: var(--space-8);
+}
+
+.trip-header {
+  padding: var(--space-5);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-large);
+  background: color-mix(in srgb, var(--color-header) 32%, var(--color-surface));
+  box-shadow: var(--shadow-small);
+}
+
+.trip-header__eyebrow,
+.stage-list__eyebrow {
+  margin: 0 0 var(--space-1);
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.trip-header__dates {
+  margin: var(--space-2) 0 var(--space-5);
+  font-size: 1rem;
+  font-weight: 550;
+}
+
+.trip-header__progress-copy {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  font-weight: 650;
+}
+
+.trip-header__progress {
+  display: block;
+  width: 100%;
+  height: 0.55rem;
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--color-status-surface);
+  color: var(--color-focus-ring);
+  accent-color: var(--color-focus-ring);
+}
+
+.trip-header__progress::-webkit-progress-bar {
+  border-radius: var(--radius-pill);
+  background: var(--color-status-surface);
+}
+
+.trip-header__progress::-webkit-progress-value,
+.trip-header__progress::-moz-progress-bar {
+  border-radius: var(--radius-pill);
+  background: var(--color-focus-ring);
+}
+
+.stage-list,
+.stage-list__items,
+.stage-list__item {
+  min-width: 0;
+}
+
+.stage-list__heading {
+  margin-bottom: var(--space-4);
+}
+
+.stage-list__items,
+.stage-days__list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.stage-list__items {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.stage-card {
+  overflow: hidden;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-medium);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-small);
+}
+
+.stage-card--past {
+  background: color-mix(in srgb, var(--color-status-surface) 50%, var(--color-surface));
+}
+
+.stage-card--current {
+  border-color: color-mix(in srgb, var(--color-focus-ring) 52%, transparent);
+  background: color-mix(in srgb, var(--color-header) 20%, var(--color-surface));
+  box-shadow: 0 0.35rem 1.4rem rgb(71 122 113 / 14%);
+}
+
+.stage-card__heading {
+  font: inherit;
+}
+
+.stage-card__toggle {
+  position: relative;
+  display: grid;
+  width: 100%;
+  min-height: var(--touch-target);
+  cursor: pointer;
+  gap: var(--space-1);
+  padding: var(--space-4) 3.25rem var(--space-4) var(--space-4);
+  border: 0;
+  background: transparent;
+  text-align: left;
+}
+
+.stage-card__toggle:hover {
+  background: rgb(255 255 255 / 42%);
+}
+
+.stage-card__number {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.stage-card__title-row {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.stage-card__city {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.stage-card__current {
+  padding: 0.15rem var(--space-2);
+  border-radius: var(--radius-pill);
+  background: var(--color-header);
+  color: var(--color-text);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.stage-card__japanese,
+.stage-card__stay {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.stage-card__chevron {
+  position: absolute;
+  top: 50%;
+  right: var(--space-4);
+  font-size: 1.35rem;
+  transform: translateY(-50%) rotate(0deg);
+  transition: transform var(--motion-fast) var(--motion-ease-out);
+}
+
+.stage-card__toggle[aria-expanded='true'] .stage-card__chevron {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+.stage-card__panel {
+  display: grid;
+  gap: var(--space-5);
+  padding: 0 var(--space-4) var(--space-4);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.stage-hotel,
+.stage-days {
+  min-width: 0;
+  padding-top: var(--space-4);
+}
+
+.stage-hotel h3,
+.stage-days h3 {
+  margin: 0 0 var(--space-2);
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.stage-hotel__button {
+  display: grid;
+  width: 100%;
+  min-height: var(--touch-target);
+  cursor: pointer;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  border: 1px solid color-mix(in srgb, var(--color-category-hotel) 68%, transparent);
+  border-radius: var(--radius-small);
+  background: color-mix(in srgb, var(--color-category-hotel) 38%, white);
+  text-align: left;
+}
+
+.stage-hotel__button strong {
+  overflow-wrap: anywhere;
+}
+
+.stage-hotel__button span {
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+}
+
+.stage-days__list {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.stage-day {
+  display: grid;
+  min-height: var(--touch-target);
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-small);
+  background: var(--color-surface-elevated);
+  text-decoration: none;
+}
+
+.stage-day:hover {
+  border-color: color-mix(in srgb, var(--color-focus-ring) 45%, transparent);
+}
+
+.stage-day > span {
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+}
+
+.stage-day__plans {
+  white-space: nowrap;
+}
+
+.stage-day__arrow {
+  font-size: 1rem;
+}
+
+.stage-transport {
+  position: relative;
+  display: grid;
+  justify-items: stretch;
+  padding: var(--space-2) var(--space-3);
+}
+
+.stage-transport__line {
+  position: absolute;
+  width: 0.125rem;
+  background: var(--color-category-transport);
+  inset: 0 auto 0 1.25rem;
+}
+
+.stage-transport__button {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  min-height: var(--touch-target);
+  cursor: pointer;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid color-mix(in srgb, var(--color-category-transport) 72%, transparent);
+  border-radius: var(--radius-small);
+  background: color-mix(in srgb, var(--color-category-transport) 38%, white);
+  text-align: left;
+}
+
+.stage-transport__button strong,
+.stage-transport__service {
+  overflow-wrap: anywhere;
+}
+
+.stage-transport__kind {
+  color: var(--color-text-muted);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.stage-transport__meta,
+.stage-transport__service {
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+}
+
+@media (max-width: 24rem) {
+  .stage-day {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .stage-day__plans {
+    display: none;
+  }
+}

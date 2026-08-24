@@ -2,6 +2,7 @@
 @import './sheets.css';
 @import './today.css';
 @import './explore.css';
+@import './trip.css';
 
 :root {
   color: var(--color-text);

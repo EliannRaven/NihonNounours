@@ -77,6 +77,10 @@ export function getAllDays(): TripDay[] {
   )
 }
 
+export function getDaysForStage(stageOrder: number): TripDay[] {
+  return getAllDays().filter((day) => day.stageOrder === stageOrder)
+}
+
 export function getHotelForStage(stageOrder: number): Hotel | undefined {
   return getRecordValue(tripData.hotels, String(stageOrder))
 }
@@ -91,6 +95,12 @@ export function getFood(id: string): Food | undefined {
 
 export function getTransport(id: string): Transport | undefined {
   return getRecordValue(tripData.transports, id)
+}
+
+export function getTransportsForStage(stageOrder: number): Transport[] {
+  return Object.values(tripData.transports)
+    .filter((transport) => transport.stageOrder === stageOrder)
+    .sort((first, second) => first.date.localeCompare(second.date))
 }
 
 export function getActivitiesForCity(city: string): Activity[] {

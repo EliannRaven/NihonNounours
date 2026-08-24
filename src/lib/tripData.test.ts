@@ -6,6 +6,7 @@ import {
   getAllStages,
   getDay,
   getDefaultTripDate,
+  getDaysForStage,
   getFavoriteActivities,
   getFavoriteFood,
   getFood,
@@ -16,6 +17,7 @@ import {
   getStageForDate,
   getTimelineForDate,
   getTransport,
+  getTransportsForStage,
   getTrip,
   resolveTripDate,
   tripData,
@@ -100,6 +102,30 @@ describe('day selectors', () => {
   it('returns undefined on the exclusive end date', () => {
     expect(getDay('2026-10-04')).toBeUndefined()
   })
+
+  it('groups every generated day by authoritative Stage order', () => {
+    const stageDays = getAllStages().flatMap(({ stageOrder }) =>
+      getDaysForStage(stageOrder),
+    )
+
+    expect(stageDays).toHaveLength(23)
+    expect(getDaysForStage(4).map(({ date }) => date)).toEqual([
+      '2026-09-15',
+    ])
+    expect(getDaysForStage(6).map(({ date }) => date)).toEqual([
+      '2026-09-17',
+      '2026-09-18',
+      '2026-09-19',
+      '2026-09-20',
+    ])
+  })
+
+  it('returns a new chronological Stage-day array', () => {
+    const days = getDaysForStage(6)
+    days.reverse()
+
+    expect(getDaysForStage(6)[0]?.date).toBe('2026-09-17')
+  })
 })
 
 describe('entity selectors', () => {
@@ -123,6 +149,18 @@ describe('entity selectors', () => {
     expect(getHotelForStage(4)?.name).toBe(
       'plat hostel keikyu kamakura wave',
     )
+  })
+
+  it('associates explicit major Transport records with their Stage', () => {
+    expect(getTransportsForStage(4).map(({ id }) => id)).toEqual(['TRA004'])
+    expect(getTransportsForStage(8)).toEqual([])
+  })
+
+  it('returns a new Transport array', () => {
+    const transports = getTransportsForStage(4)
+    transports.pop()
+
+    expect(getTransportsForStage(4).map(({ id }) => id)).toEqual(['TRA004'])
   })
 })
 
