@@ -1,0 +1,51 @@
+:root {
+  --color-background: #faf8f4;
+  --color-header: #b8d8d1;
+  --color-surface: #fffdf9;
+  --color-surface-elevated: #ffffff;
+  --color-text: #252422;
+  --color-text-muted: #6f6b66;
+  --color-border-subtle: rgb(37 36 34 / 10%);
+  --color-overlay: rgb(37 36 34 / 38%);
+  --color-focus-ring: #477a71;
+
+  --color-category-activity: #bfd4bd;
+  --color-category-transport: #bfd6e6;
+  --color-category-food: #efb5a9;
+  --color-category-shopping: #f2c9a8;
+  --color-category-hotel: #d4c5df;
+  --color-category-flexible: #f2e3a8;
+
+  --color-status-surface: #f0eee9;
+  --color-status-text: #5f5b56;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+
+  --radius-small: 0.75rem;
+  --radius-medium: 1rem;
+  --radius-large: 1.5rem;
+  --radius-pill: 999px;
+
+  --shadow-small: 0 0.25rem 1rem rgb(37 36 34 / 8%);
+  --shadow-medium: 0 1rem 3rem rgb(37 36 34 / 18%);
+
+  --touch-target: 2.75rem;
+  --content-max-width: 45rem;
+  --sheet-max-width: 38rem;
+  --header-height: 3.75rem;
+  --page-horizontal-spacing: clamp(1rem, 5vw, 1.5rem);
+
+  --z-header: 20;
+  --z-overlay: 40;
+  --z-sheet: 50;
+
+  --motion-fast: 200ms;
+  --motion-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
