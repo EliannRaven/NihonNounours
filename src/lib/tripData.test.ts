@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   getActivitiesForCity,
   getActivity,
+  getAllDays,
   getAllStages,
   getDay,
   getDefaultTripDate,
@@ -69,6 +70,21 @@ describe('stage selectors', () => {
 })
 
 describe('day selectors', () => {
+  it('returns all generated days in chronological order', () => {
+    const days = getAllDays()
+
+    expect(days).toHaveLength(23)
+    expect(days[0]?.date).toBe('2026-09-11')
+    expect(days.at(-1)?.date).toBe('2026-10-03')
+  })
+
+  it('returns a new days array without mutating generated data', () => {
+    const days = getAllDays()
+    days.reverse()
+
+    expect(getAllDays()[0]?.date).toBe('2026-09-11')
+  })
+
   it('returns Day 1 on September 11', () => {
     expect(getDay('2026-09-11')?.dayNumber).toBe(1)
   })

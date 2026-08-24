@@ -71,6 +71,12 @@ export function getDay(date: IsoDate): TripDay | undefined {
   return getRecordValue(tripData.days, date)
 }
 
+export function getAllDays(): TripDay[] {
+  return Object.values(tripData.days).sort((first, second) =>
+    first.date.localeCompare(second.date),
+  )
+}
+
 export function getHotelForStage(stageOrder: number): Hotel | undefined {
   return getRecordValue(tripData.hotels, String(stageOrder))
 }
