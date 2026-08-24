@@ -8,6 +8,7 @@ import {
 import { DayNavigator } from '../components/today/DayNavigator'
 import { Timeline } from '../components/today/Timeline'
 import { TodayHeader } from '../components/today/TodayHeader'
+import { useTripNow } from '../components/today/todayTime'
 import {
   getAllDays,
   getDay,
@@ -19,6 +20,8 @@ import {
 export function TodayPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [selection, setSelection] = useState<EntitySheetSelection | null>(null)
+  const trip = getTrip()
+  const tripNow = useTripNow(trip.timeZone)
   const selectedDate = resolveTripDate(searchParams.get('date'))
   const day = getDay(selectedDate)
 
@@ -36,9 +39,14 @@ export function TodayPage() {
     <>
       <PageContainer>
         <div className="today-page">
-          <TodayHeader day={day} trip={getTrip()} />
+          <TodayHeader day={day} trip={trip} />
           <DayNavigator days={getAllDays()} selectedDate={selectedDate} onSelect={selectDate} />
-          <Timeline items={getTimelineForDate(selectedDate)} onOpenEntity={setSelection} />
+          <Timeline
+            key={selectedDate}
+            items={getTimelineForDate(selectedDate)}
+            onOpenEntity={setSelection}
+            tripNow={selectedDate === tripNow.date ? tripNow : null}
+          />
         </div>
       </PageContainer>
       <EntityBottomSheet selection={selection} onClose={() => setSelection(null)} />

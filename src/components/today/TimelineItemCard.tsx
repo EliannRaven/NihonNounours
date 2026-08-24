@@ -6,6 +6,7 @@ interface TimelineItemCardProps {
   item: TimelineItem
   selection: EntitySheetSelection | null
   onOpen: (selection: EntitySheetSelection) => void
+  isEarlier?: boolean
 }
 
 function TimelineCardContent({ item, hasEntity }: { item: TimelineItem; hasEntity: boolean }) {
@@ -38,10 +39,15 @@ function TimelineCardContent({ item, hasEntity }: { item: TimelineItem; hasEntit
   )
 }
 
-export function TimelineItemCard({ item, selection, onOpen }: TimelineItemCardProps) {
+export function TimelineItemCard({
+  item,
+  selection,
+  onOpen,
+  isEarlier = false,
+}: TimelineItemCardProps) {
   const content = <TimelineCardContent item={item} hasEntity={selection !== null} />
   return (
-    <li className="timeline-item">
+    <li className={`timeline-item${isEarlier ? ' is-earlier' : ''}`}>
       <span className="timeline-item__marker" aria-hidden="true" />
       {selection ? (
         <button className="timeline-item__card is-interactive" type="button" onClick={() => onOpen(selection)}>

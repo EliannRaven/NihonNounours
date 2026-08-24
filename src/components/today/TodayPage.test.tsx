@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
-import { describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { TodayPage } from '../../pages/TodayPage'
 
 function LocationObserver() {
@@ -23,6 +23,15 @@ function getTimelineItems() {
   return within(screen.getByRole('heading', { name: 'Timeline' }).closest('section') as HTMLElement)
     .getAllByRole('listitem')
 }
+
+beforeEach(() => {
+  vi.useFakeTimers()
+  vi.setSystemTime(new Date('2026-08-24T12:00:00Z'))
+})
+
+afterEach(() => {
+  vi.useRealTimers()
+})
 
 describe('TodayPage date selection', () => {
   it('resolves September 15 as Day 5 in Kamakura', () => {
@@ -164,5 +173,97 @@ describe('TodayPage timeline', () => {
     expect(
       screen.getByRole('button', { name: 'Friday, 18 September, Day 8' }),
     ).toHaveAttribute('aria-current', 'date')
+  })
+})
+
+describe('TodayPage temporal awareness', () => {
+  it('shows NOW only while viewing the actual current Japan date', () => {
+    vi.setSystemTime(new Date('2026-09-15T04:30:00Z'))
+    const { unmount } = renderToday('/today?date=2026-09-15')
+
+    expect(screen.getByLabelText('Current time, 13:30')).toBeInTheDocument()
+
+    unmount()
+    renderToday('/today?date=2026-09-14')
+    expect(screen.queryByLabelText(/Current time/)).not.toBeInTheDocument()
+  })
+
+  it('does not add temporal UI to a future viewed date', () => {
+    vi.setSystemTime(new Date('2026-09-15T04:30:00Z'))
+    renderToday('/today?date=2026-09-16')
+
+    expect(screen.queryByLabelText(/Current time/)).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Earlier today/ })).not.toBeInTheDocument()
+    expect(screen.getByText('Sasuke Inari Shrine')).toBeInTheDocument()
+  })
+
+  it('collapses the real leading September 15 items by default', () => {
+    vi.setSystemTime(new Date('2026-09-15T04:30:00Z'))
+    renderToday()
+
+    const toggle = screen.getByRole('button', { name: 'Earlier today · 2 items' })
+    expect(toggle).toHaveAttribute('aria-expanded', 'false')
+    expect(screen.queryByText('Lunch')).not.toBeInTheDocument()
+    expect(screen.getByText(/Hasedera Temple/)).toBeInTheDocument()
+  })
+
+  it('expands earlier items in authored order', () => {
+    vi.setSystemTime(new Date('2026-09-15T04:30:00Z'))
+    renderToday()
+    const toggle = screen.getByRole('button', { name: 'Earlier today · 2 items' })
+
+    fireEvent.click(toggle)
+
+    expect(toggle).toHaveAttribute('aria-expanded', 'true')
+    const earlierList = screen.getByText('Lunch').closest('ol') as HTMLElement
+    const earlierItems = within(earlierList).getAllByRole('listitem')
+    expect(earlierItems[0]).toHaveTextContent('Shinjuku → Kamakura')
+    expect(earlierItems[1]).toHaveTextContent('Lunch')
+  })
+
+  it('keeps an earlier entity interactive and restores its focus', () => {
+    vi.setSystemTime(new Date('2026-09-15T04:30:00Z'))
+    renderToday()
+    fireEvent.click(screen.getByRole('button', { name: /Earlier today/ }))
+    const transportButton = screen.getByRole('button', {
+      name: /Shinjuku → Kamakura/,
+    })
+    transportButton.focus()
+
+    fireEvent.click(transportButton)
+    expect(
+      screen.getByRole('dialog', { name: 'Shinjuku → Kamakura' }),
+    ).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Close details' }))
+    expect(transportButton).toHaveFocus()
+  })
+
+  it('places NOW after an active item and before the next future item', () => {
+    vi.setSystemTime(new Date('2026-09-15T04:30:00Z'))
+    renderToday()
+    const now = screen.getByLabelText('Current time, 13:30')
+    const hasedera = screen.getByText(/Hasedera Temple/).closest('li') as HTMLElement
+    const kotoku = screen.getByText('Kōtoku-in – Great Buddha').closest('li') as HTMLElement
+
+    expect(hasedera.compareDocumentPosition(now)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    )
+    expect(now.compareDocumentPosition(kotoku)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    )
+  })
+
+  it('places NOW after the remaining timeline late in the day', () => {
+    vi.setSystemTime(new Date('2026-09-15T14:30:00Z'))
+    renderToday()
+    const now = screen.getByLabelText('Current time, 23:30')
+    const hotel = screen
+      .getByText('plat hostel keikyu kamakura wave')
+      .closest('li') as HTMLElement
+
+    expect(hotel.compareDocumentPosition(now)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    )
   })
 })

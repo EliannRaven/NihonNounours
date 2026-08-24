@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import type { TripDay } from '../../types/trip'
 import { formatLongDate, getDateParts } from './todayUtils'
+import { getScrollBehavior } from './todayTime'
 
 interface DayNavigatorProps {
   days: readonly TripDay[]
@@ -13,7 +14,7 @@ export function DayNavigator({ days, selectedDate, onSelect }: DayNavigatorProps
 
   useEffect(() => {
     selectedButtonRef.current?.scrollIntoView?.({
-      behavior: 'smooth', block: 'nearest', inline: 'center',
+      behavior: getScrollBehavior(), block: 'nearest', inline: 'center',
     })
   }, [selectedDate])
 
