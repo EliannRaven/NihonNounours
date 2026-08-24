@@ -193,6 +193,7 @@ describe('TodayPage temporal awareness', () => {
     renderToday('/today?date=2026-09-16')
 
     expect(screen.queryByLabelText(/Current time/)).not.toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'NEXT' })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /Earlier today/ })).not.toBeInTheDocument()
     expect(screen.getByText('Sasuke Inari Shrine')).toBeInTheDocument()
   })
@@ -244,7 +245,10 @@ describe('TodayPage temporal awareness', () => {
     renderToday()
     const now = screen.getByLabelText('Current time, 13:30')
     const hasedera = screen.getByText(/Hasedera Temple/).closest('li') as HTMLElement
-    const kotoku = screen.getByText('Kōtoku-in – Great Buddha').closest('li') as HTMLElement
+    const timeline = screen.getByRole('region', { name: 'Timeline' })
+    const kotoku = within(timeline)
+      .getByText('Kōtoku-in – Great Buddha')
+      .closest('li') as HTMLElement
 
     expect(hasedera.compareDocumentPosition(now)).toBe(
       Node.DOCUMENT_POSITION_FOLLOWING,
@@ -265,5 +269,95 @@ describe('TodayPage temporal awareness', () => {
     expect(hotel.compareDocumentPosition(now)).toBe(
       Node.DOCUMENT_POSITION_FOLLOWING,
     )
+  })
+})
+
+describe('TodayPage NEXT experience', () => {
+  it('shows the real next Activity directly below the header at 13:30 JST', () => {
+    vi.setSystemTime(new Date('2026-09-15T04:30:00Z'))
+    renderToday()
+
+    const nextHeading = screen.getByRole('heading', { name: 'NEXT' })
+    const nextButton = screen.getByRole('button', {
+      name: 'Next: Kōtoku-in – Great Buddha, 14:00',
+    })
+    const header = screen.getByRole('heading', { name: 'Kamakura' }).closest('header')
+    const navigator = screen.getByRole('navigation', { name: 'Trip dates' })
+
+    expect(nextButton).toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: /Next: Hasedera Temple/ }),
+    ).not.toBeInTheDocument()
+    expect(header?.compareDocumentPosition(nextHeading)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    )
+    expect(nextHeading.compareDocumentPosition(navigator)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    )
+  })
+
+  it('opens NEXT in the shared Entity sheet and restores focus', () => {
+    vi.setSystemTime(new Date('2026-09-15T04:30:00Z'))
+    renderToday()
+    const nextButton = screen.getByRole('button', {
+      name: 'Next: Kōtoku-in – Great Buddha, 14:00',
+    })
+    nextButton.focus()
+
+    fireEvent.click(nextButton)
+    expect(
+      screen.getByRole('dialog', {
+        name: 'Kōtoku-in – Great Buddha of Kamakura',
+      }),
+    ).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Close details' }))
+    expect(nextButton).toHaveFocus()
+  })
+
+  it('allows the real untimed major Transport to become NEXT', () => {
+    vi.setSystemTime(new Date('2026-09-14T20:00:00Z'))
+    renderToday()
+
+    expect(
+      screen.getByRole('button', { name: 'Next: Shinjuku → Kamakura' }),
+    ).toBeInTheDocument()
+  })
+
+  it('shows real adjacent local Transport only as Getting there context', () => {
+    vi.setSystemTime(new Date('2026-09-11T21:30:00Z'))
+    renderToday('/today?date=2026-09-12')
+
+    expect(
+      screen.getByRole('button', {
+        name: 'Next: Temple suspendu de Yamadera, 08:30',
+      }),
+    ).toBeInTheDocument()
+    const nextRegion = screen.getByRole('region', { name: 'NEXT' })
+    expect(
+      within(nextRegion).getByRole('heading', { name: 'Getting there' }),
+    ).toBeInTheDocument()
+    expect(within(nextRegion).getByText('Sendai - Yamadera')).toBeInTheDocument()
+    expect(screen.queryByText(/Leave around|Leave now/)).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: /Next: Sendai - Yamadera/ }),
+    ).not.toBeInTheDocument()
+  })
+
+  it('hides NEXT when no eligible candidate remains', () => {
+    vi.setSystemTime(new Date('2026-09-15T14:30:00Z'))
+    renderToday()
+
+    expect(screen.queryByRole('heading', { name: 'NEXT' })).not.toBeInTheDocument()
+  })
+
+  it('keeps an empty current day calm without NEXT', () => {
+    vi.setSystemTime(new Date('2026-09-18T03:00:00Z'))
+    renderToday('/today?date=2026-09-18')
+
+    expect(
+      screen.getByRole('heading', { name: 'Nothing planned yet.' }),
+    ).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'NEXT' })).not.toBeInTheDocument()
   })
 })

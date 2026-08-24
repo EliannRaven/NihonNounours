@@ -6,9 +6,14 @@ import {
   type EntitySheetSelection,
 } from '../components/sheets/EntityBottomSheet'
 import { DayNavigator } from '../components/today/DayNavigator'
+import { NextCard } from '../components/today/NextCard'
 import { Timeline } from '../components/today/Timeline'
 import { TodayHeader } from '../components/today/TodayHeader'
-import { useTripNow } from '../components/today/todayTime'
+import { getNextTimelineTarget } from '../components/today/nextTimeline'
+import {
+  getTimelineTemporalState,
+  useTripNow,
+} from '../components/today/todayTime'
 import {
   getAllDays,
   getDay,
@@ -27,6 +32,23 @@ export function TodayPage() {
 
   if (!day) return null
 
+  const timelineItems = getTimelineForDate(selectedDate)
+  const currentTripNow = selectedDate === tripNow.date ? tripNow : null
+  const temporalState = currentTripNow
+    ? getTimelineTemporalState(
+        timelineItems,
+        currentTripNow.minutesSinceMidnight,
+      )
+    : null
+  const nextTarget =
+    currentTripNow && temporalState
+      ? getNextTimelineTarget(
+          timelineItems,
+          currentTripNow.minutesSinceMidnight,
+          temporalState.pastPrefixCount,
+        )
+      : null
+
   const selectDate = (date: string) => {
     setSearchParams((currentParams) => {
       const nextParams = new URLSearchParams(currentParams)
@@ -40,12 +62,20 @@ export function TodayPage() {
       <PageContainer>
         <div className="today-page">
           <TodayHeader day={day} trip={trip} />
+          {nextTarget && currentTripNow ? (
+            <NextCard
+              target={nextTarget}
+              currentMinutes={currentTripNow.minutesSinceMidnight}
+              onOpenEntity={setSelection}
+            />
+          ) : null}
           <DayNavigator days={getAllDays()} selectedDate={selectedDate} onSelect={selectDate} />
           <Timeline
             key={selectedDate}
-            items={getTimelineForDate(selectedDate)}
+            items={timelineItems}
             onOpenEntity={setSelection}
-            tripNow={selectedDate === tripNow.date ? tripNow : null}
+            tripNow={currentTripNow}
+            temporalState={temporalState}
           />
         </div>
       </PageContainer>

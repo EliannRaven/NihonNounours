@@ -6,7 +6,7 @@ import { TimelineItemCard } from './TimelineItemCard'
 import { getEntitySelection } from './todayUtils'
 import {
   getScrollBehavior,
-  getTimelineTemporalState,
+  type TimelineTemporalState,
   type TripNow,
 } from './todayTime'
 
@@ -14,10 +14,12 @@ export function Timeline({
   items,
   onOpenEntity,
   tripNow,
+  temporalState,
 }: {
   items: readonly TimelineItemType[]
   onOpenEntity: (selection: EntitySheetSelection) => void
   tripNow: TripNow | null
+  temporalState: TimelineTemporalState | null
 }) {
   const [isEarlierExpanded, setIsEarlierExpanded] = useState(false)
   const nowMarkerRef = useRef<HTMLLIElement>(null)
@@ -40,15 +42,16 @@ export function Timeline({
     )
   }
 
-  const temporalState = tripNow
-    ? getTimelineTemporalState(items, tripNow.minutesSinceMidnight)
-    : { pastPrefixCount: 0, nowInsertIndex: -1 }
-  const earlierItems = items.slice(0, temporalState.pastPrefixCount)
-  const visibleItems = items.slice(temporalState.pastPrefixCount)
+  const resolvedTemporalState = temporalState ?? {
+    pastPrefixCount: 0,
+    nowInsertIndex: -1,
+  }
+  const earlierItems = items.slice(0, resolvedTemporalState.pastPrefixCount)
+  const visibleItems = items.slice(resolvedTemporalState.pastPrefixCount)
 
   const timelineContent = []
   for (let index = 0; index <= visibleItems.length; index += 1) {
-    if (tripNow && index === temporalState.nowInsertIndex) {
+    if (tripNow && index === resolvedTemporalState.nowInsertIndex) {
       timelineContent.push(
         <li
           key="now"

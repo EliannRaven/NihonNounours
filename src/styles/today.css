@@ -35,6 +35,156 @@
   font-weight: 550;
 }
 
+.next-card {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-large);
+  background: var(--color-surface-elevated);
+  box-shadow: var(--shadow-medium);
+}
+
+.page-container .next-card h2 {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+}
+
+.next-card__target {
+  position: relative;
+  display: grid;
+  width: 100%;
+  min-height: var(--touch-target);
+  cursor: pointer;
+  grid-template-columns: 0.3rem minmax(0, 1fr);
+  gap: var(--space-4);
+  padding: var(--space-4);
+  overflow: hidden;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-medium);
+  background: var(--color-background);
+  color: var(--color-text);
+  text-align: left;
+  transition:
+    box-shadow var(--motion-fast) ease,
+    transform var(--motion-fast) ease;
+}
+
+.next-card__target:hover {
+  box-shadow: var(--shadow-small);
+}
+
+.next-card__target:active {
+  transform: scale(0.99);
+}
+
+.next-card__accent {
+  border-radius: var(--radius-pill);
+  background: var(--color-category-flexible);
+}
+
+.next-card__target.is-activity .next-card__accent {
+  background: var(--color-category-activity);
+}
+
+.next-card__target.is-food .next-card__accent {
+  background: var(--color-category-food);
+}
+
+.next-card__target.is-transport .next-card__accent {
+  background: var(--color-category-transport);
+}
+
+.next-card__target.is-hotel .next-card__accent {
+  background: var(--color-category-hotel);
+}
+
+.next-card__content {
+  display: grid;
+  min-width: 0;
+  gap: var(--space-2);
+}
+
+.next-card__time {
+  color: var(--color-focus-ring);
+  font-size: 1.125rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+.next-card__title {
+  font-size: 1.25rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.next-card__metadata {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+}
+
+.next-card__leave {
+  width: fit-content;
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--color-status-surface);
+  color: var(--color-status-text);
+  font-size: 0.875rem;
+  font-weight: 650;
+}
+
+.next-card__leave.is-now {
+  background: color-mix(
+    in srgb,
+    var(--color-category-food) 48%,
+    var(--color-surface)
+  );
+  color: var(--color-text);
+}
+
+.next-card__travel {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.page-container .next-card__travel h3 {
+  margin: 0 0 var(--space-2);
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+  font-weight: 650;
+}
+
+.next-card__travel ul {
+  display: grid;
+  gap: var(--space-2);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.next-card__travel li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+}
+
+.next-card__travel li span:last-child:not(:nth-child(2)) {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+}
+
 .day-navigator {
   min-width: 0;
   margin-inline: calc(var(--page-horizontal-spacing) * -1);
