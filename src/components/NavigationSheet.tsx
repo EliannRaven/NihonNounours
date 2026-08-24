@@ -19,6 +19,7 @@ export function NavigationSheet({
   onClose,
 }: NavigationSheetProps) {
   const closeButtonRef = useRef<HTMLButtonElement>(null)
+  const dialogRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
     if (!isOpen) {
@@ -30,6 +31,38 @@ export function NavigationSheet({
       if (event.key === 'Escape') {
         event.preventDefault()
         onClose(true)
+        return
+      }
+
+      if (event.key !== 'Tab') {
+        return
+      }
+
+      const dialog = dialogRef.current
+      if (!dialog) {
+        return
+      }
+
+      const focusableElements = Array.from(
+        dialog.querySelectorAll<HTMLElement>('button:not([disabled]), a[href]'),
+      ).filter((element) => element.tabIndex >= 0)
+      const firstElement = focusableElements[0]
+      const lastElement = focusableElements.at(-1)
+
+      if (!firstElement || !lastElement) {
+        return
+      }
+
+      if (!dialog.contains(document.activeElement)) {
+        event.preventDefault()
+        const elementToFocus = event.shiftKey ? lastElement : firstElement
+        elementToFocus.focus()
+      } else if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault()
+        lastElement.focus()
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault()
+        firstElement.focus()
       }
     }
     document.addEventListener('keydown', handleKeyDown)
@@ -44,11 +77,12 @@ export function NavigationSheet({
       <button
         className="navigation-layer__backdrop"
         type="button"
-        tabIndex={isOpen ? 0 : -1}
+        tabIndex={-1}
         aria-label="Close navigation backdrop"
         onClick={() => onClose(true)}
       />
       <section
+        ref={dialogRef}
         id="primary-navigation-sheet"
         className="navigation-sheet"
         role="dialog"

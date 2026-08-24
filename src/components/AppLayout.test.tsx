@@ -82,6 +82,50 @@ describe('NavigationSheet', () => {
     ).toHaveFocus()
   })
 
+  it('keeps the backdrop out of the normal tab order', () => {
+    renderLayout()
+    openNavigation()
+
+    expect(
+      screen.getByRole('button', { name: 'Close navigation backdrop' }),
+    ).toHaveAttribute('tabindex', '-1')
+  })
+
+  it('wraps Tab from Trip Info to the close control', () => {
+    renderLayout()
+    const dialog = openNavigation()
+    const lastLink = within(dialog).getByRole('link', { name: 'Trip Info' })
+
+    lastLink.focus()
+    fireEvent.keyDown(document, { key: 'Tab' })
+
+    expect(
+      within(dialog).getByRole('button', { name: 'Close navigation sheet' }),
+    ).toHaveFocus()
+  })
+
+  it('wraps Shift+Tab from the close control to Trip Info', () => {
+    renderLayout()
+    const dialog = openNavigation()
+
+    fireEvent.keyDown(document, { key: 'Tab', shiftKey: true })
+
+    expect(within(dialog).getByRole('link', { name: 'Trip Info' })).toHaveFocus()
+  })
+
+  it('returns focus to the dialog if it reaches the hamburger while open', () => {
+    renderLayout()
+    const menuButton = screen.getByRole('button', { name: 'Open navigation' })
+    const dialog = openNavigation()
+
+    menuButton.focus()
+    fireEvent.keyDown(document, { key: 'Tab' })
+
+    expect(
+      within(dialog).getByRole('button', { name: 'Close navigation sheet' }),
+    ).toHaveFocus()
+  })
+
   it('exposes exactly five primary destinations', () => {
     renderLayout()
 
@@ -161,6 +205,7 @@ describe('NavigationSheet', () => {
 
   it('closes from the explicit close control', () => {
     renderLayout()
+    const menuButton = screen.getByRole('button', { name: 'Open navigation' })
     openNavigation()
 
     fireEvent.click(
@@ -170,6 +215,7 @@ describe('NavigationSheet', () => {
     expect(
       screen.queryByRole('dialog', { name: 'Navigation' }),
     ).not.toBeInTheDocument()
+    expect(menuButton).toHaveFocus()
   })
 
   it('closes when the backdrop is pressed', () => {
