@@ -2,6 +2,7 @@ import { fireEvent, render, screen, within } from '@testing-library/react'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { TodayPage } from '../../pages/TodayPage'
+import { ExplorePage } from '../../pages/ExplorePage'
 
 function LocationObserver() {
   const location = useLocation()
@@ -13,6 +14,7 @@ function renderToday(entry = '/today?date=2026-09-15') {
     <MemoryRouter initialEntries={[entry]}>
       <Routes>
         <Route path="today" element={<TodayPage />} />
+        <Route path="explore" element={<ExplorePage />} />
       </Routes>
       <LocationObserver />
     </MemoryRouter>,
@@ -145,13 +147,33 @@ describe('TodayPage timeline', () => {
     ).toBeInTheDocument()
   })
 
-  it('renders flexible Food without a reference as a non-interactive item', () => {
+  it('renders flexible Food discovery as an actionable option', () => {
     renderToday()
-    const lunch = screen.getByText('Lunch').closest('article')
+    const lunch = screen.getByRole('button', {
+      name: 'Lunch, explore food options',
+    })
 
     expect(lunch).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: /Lunch/ })).not.toBeInTheDocument()
-    expect(within(lunch as HTMLElement).getByText('Flexible')).toBeInTheDocument()
+    expect(within(lunch).getByText('Flexible')).toBeInTheDocument()
+    expect(within(lunch).getByText('Explore options →')).toBeInTheDocument()
+  })
+
+  it('navigates real Lunch discovery to contextual Food Explore', () => {
+    renderToday()
+
+    fireEvent.click(
+      screen.getByRole('button', { name: 'Lunch, explore food options' }),
+    )
+
+    expect(screen.getByRole('heading', { name: 'Explore' })).toBeInTheDocument()
+    const location = screen.getByLabelText('Current location').textContent || ''
+    const query = location.slice(location.indexOf('?'))
+    const params = new URLSearchParams(query)
+    expect(params.get('mode')).toBe('food')
+    expect(params.get('city')).toBe('Kamakura')
+    expect(params.get('area')).toBe('Kamakura Station')
+    expect(params.get('category')).toBe('Meal')
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
   it('renders local Transport without a reference as a non-interactive item', () => {

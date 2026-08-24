@@ -1,6 +1,7 @@
 @import './tokens.css';
 @import './sheets.css';
 @import './today.css';
+@import './explore.css';
 
 :root {
   color: var(--color-text);

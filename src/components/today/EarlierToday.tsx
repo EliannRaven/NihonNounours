@@ -1,13 +1,14 @@
 import type { EntitySheetSelection } from '../sheets/EntityBottomSheet'
-import type { TimelineItem } from '../../types/trip'
+import type { DiscoveryMetadata, TimelineItem } from '../../types/trip'
 import { TimelineItemCard } from './TimelineItemCard'
-import { getEntitySelection } from './todayUtils'
+import { getTimelineAction } from './timelineAction'
 
 interface EarlierTodayProps {
   items: readonly TimelineItem[]
   isExpanded: boolean
   onToggle: () => void
   onOpenEntity: (selection: EntitySheetSelection) => void
+  onOpenDiscovery: (discovery: DiscoveryMetadata) => void
 }
 
 export function EarlierToday({
@@ -15,6 +16,7 @@ export function EarlierToday({
   isExpanded,
   onToggle,
   onOpenEntity,
+  onOpenDiscovery,
 }: EarlierTodayProps) {
   return (
     <li className="earlier-today">
@@ -34,8 +36,9 @@ export function EarlierToday({
             <TimelineItemCard
               key={`${item.reference || item.title || item.type}-${index}`}
               item={item}
-              selection={getEntitySelection(item)}
-              onOpen={onOpenEntity}
+              action={getTimelineAction(item)}
+              onOpenEntity={onOpenEntity}
+              onOpenDiscovery={onOpenDiscovery}
               isEarlier
             />
           ))}

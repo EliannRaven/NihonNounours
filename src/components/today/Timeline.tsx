@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import type { EntitySheetSelection } from '../sheets/EntityBottomSheet'
-import type { TimelineItem as TimelineItemType } from '../../types/trip'
+import type {
+  DiscoveryMetadata,
+  TimelineItem as TimelineItemType,
+} from '../../types/trip'
 import { EarlierToday } from './EarlierToday'
 import { TimelineItemCard } from './TimelineItemCard'
-import { getEntitySelection } from './todayUtils'
+import { getTimelineAction } from './timelineAction'
 import {
   getScrollBehavior,
   type TimelineTemporalState,
@@ -13,11 +16,13 @@ import {
 export function Timeline({
   items,
   onOpenEntity,
+  onOpenDiscovery,
   tripNow,
   temporalState,
 }: {
   items: readonly TimelineItemType[]
   onOpenEntity: (selection: EntitySheetSelection) => void
+  onOpenDiscovery: (discovery: DiscoveryMetadata) => void
   tripNow: TripNow | null
   temporalState: TimelineTemporalState | null
 }) {
@@ -70,8 +75,9 @@ export function Timeline({
         <TimelineItemCard
           key={`${item.reference || item.title || item.type}-${index}`}
           item={item}
-          selection={getEntitySelection(item)}
-          onOpen={onOpenEntity}
+          action={getTimelineAction(item)}
+          onOpenEntity={onOpenEntity}
+          onOpenDiscovery={onOpenDiscovery}
         />,
       )
     }
@@ -87,6 +93,7 @@ export function Timeline({
             isExpanded={isEarlierExpanded}
             onToggle={() => setIsEarlierExpanded((expanded) => !expanded)}
             onOpenEntity={onOpenEntity}
+            onOpenDiscovery={onOpenDiscovery}
           />
         ) : null}
         {timelineContent}

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { PageContainer } from '../components/PageContainer'
 import {
   EntityBottomSheet,
@@ -21,9 +21,12 @@ import {
   getTrip,
   resolveTripDate,
 } from '../lib/tripData'
+import { buildExploreSearchParams } from '../lib/exploreContext'
+import type { DiscoveryMetadata } from '../types/trip'
 
 export function TodayPage() {
   const [searchParams, setSearchParams] = useSearchParams()
+  const navigate = useNavigate()
   const [selection, setSelection] = useState<EntitySheetSelection | null>(null)
   const trip = getTrip()
   const tripNow = useTripNow(trip.timeZone)
@@ -57,6 +60,11 @@ export function TodayPage() {
     })
   }
 
+  const openDiscovery = (discovery: DiscoveryMetadata) => {
+    const params = buildExploreSearchParams(discovery)
+    navigate({ pathname: '/explore', search: `?${params.toString()}` })
+  }
+
   return (
     <>
       <PageContainer>
@@ -74,6 +82,7 @@ export function TodayPage() {
             key={selectedDate}
             items={timelineItems}
             onOpenEntity={setSelection}
+            onOpenDiscovery={openDiscovery}
             tripNow={currentTripNow}
             temporalState={temporalState}
           />

@@ -1,0 +1,72 @@
+.explore-page {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.explore-header {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.explore-header p {
+  margin: 0;
+}
+
+.explore-mode {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-1);
+  padding: var(--space-1);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-pill);
+  margin: 0;
+  background: var(--color-status-surface);
+}
+
+.explore-mode button {
+  min-height: var(--touch-target);
+  cursor: pointer;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--color-text-muted);
+  font-weight: 650;
+  transition:
+    background-color var(--motion-fast) ease,
+    color var(--motion-fast) ease,
+    transform var(--motion-fast) ease;
+}
+
+.explore-mode button:hover {
+  color: var(--color-text);
+}
+
+.explore-mode button:active {
+  transform: scale(0.98);
+}
+
+.explore-mode button[aria-pressed='true'] {
+  background: var(--color-surface-elevated);
+  box-shadow: var(--shadow-small);
+  color: var(--color-text);
+}
+
+.explore-context {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-large);
+  background: var(--color-surface);
+}
+
+.page-container .explore-context h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.explore-context__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}

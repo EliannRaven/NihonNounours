@@ -1,15 +1,25 @@
 import type { EntitySheetSelection } from '../sheets/EntityBottomSheet'
-import type { TimelineItem } from '../../types/trip'
+import type { DiscoveryMetadata, TimelineItem } from '../../types/trip'
 import { formatTimelineTime, getTimelinePresentation } from './todayUtils'
+import type { TimelineAction } from './timelineAction'
 
 interface TimelineItemCardProps {
   item: TimelineItem
-  selection: EntitySheetSelection | null
-  onOpen: (selection: EntitySheetSelection) => void
+  action: TimelineAction
+  onOpenEntity: (selection: EntitySheetSelection) => void
+  onOpenDiscovery: (discovery: DiscoveryMetadata) => void
   isEarlier?: boolean
 }
 
-function TimelineCardContent({ item, hasEntity }: { item: TimelineItem; hasEntity: boolean }) {
+function TimelineCardContent({
+  item,
+  hasEntity,
+  hasDiscovery,
+}: {
+  item: TimelineItem
+  hasEntity: boolean
+  hasDiscovery: boolean
+}) {
   const presentation = getTimelinePresentation(item, hasEntity)
   const time = formatTimelineTime(item)
   const showDuration = item.durationMin !== null && Boolean(item.startTime || item.endTime)
@@ -33,6 +43,11 @@ function TimelineCardContent({ item, hasEntity }: { item: TimelineItem; hasEntit
           {showDuration ? <span>{item.durationMin} min</span> : null}
           {showStatus ? <span className="pill">{item.status}</span> : null}
         </span>
+        {hasDiscovery ? (
+          <span className="timeline-item__affordance" aria-hidden="true">
+            Explore options →
+          </span>
+        ) : null}
       </span>
       {time ? <span className="timeline-item__time">{time}</span> : null}
     </>
@@ -41,16 +56,36 @@ function TimelineCardContent({ item, hasEntity }: { item: TimelineItem; hasEntit
 
 export function TimelineItemCard({
   item,
-  selection,
-  onOpen,
+  action,
+  onOpenEntity,
+  onOpenDiscovery,
   isEarlier = false,
 }: TimelineItemCardProps) {
-  const content = <TimelineCardContent item={item} hasEntity={selection !== null} />
+  const content = (
+    <TimelineCardContent
+      item={item}
+      hasEntity={action?.kind === 'entity'}
+      hasDiscovery={action?.kind === 'discovery'}
+    />
+  )
+  const handleAction = () => {
+    if (action?.kind === 'entity') onOpenEntity(action.selection)
+    if (action?.kind === 'discovery') onOpenDiscovery(action.discovery)
+  }
+  const discoveryLabel =
+    action?.kind === 'discovery'
+      ? `${item.title || 'Flexible option'}, explore ${action.discovery.mode} options`
+      : undefined
   return (
     <li className={`timeline-item${isEarlier ? ' is-earlier' : ''}`}>
       <span className="timeline-item__marker" aria-hidden="true" />
-      {selection ? (
-        <button className="timeline-item__card is-interactive" type="button" onClick={() => onOpen(selection)}>
+      {action ? (
+        <button
+          className="timeline-item__card is-interactive"
+          type="button"
+          aria-label={discoveryLabel}
+          onClick={handleAction}
+        >
           {content}
         </button>
       ) : (

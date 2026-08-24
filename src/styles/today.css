@@ -392,6 +392,13 @@ button.timeline-item__card:active {
   font-size: 0.75rem;
 }
 
+.timeline-item__affordance {
+  width: fit-content;
+  color: var(--color-focus-ring);
+  font-size: 0.8125rem;
+  font-weight: 650;
+}
+
 .timeline-item__time {
   color: var(--color-text-muted);
   font-size: 0.8125rem;
