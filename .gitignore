@@ -225,3 +225,6 @@ coverage/
 *.local
 .env.*
 !.env.example
+
+# Microsoft Office temporary lock files
+~$*
