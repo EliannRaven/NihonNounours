@@ -173,6 +173,12 @@ describe('TodayPage timeline', () => {
     expect(params.get('city')).toBe('Kamakura')
     expect(params.get('area')).toBe('Kamakura Station')
     expect(params.get('category')).toBe('Meal')
+    expect(screen.getByLabelText('City')).toHaveValue('Kamakura')
+    expect(screen.getByLabelText('Area')).toHaveValue('Kamakura Station')
+    expect(screen.getByLabelText('Category')).toHaveValue('Meal')
+    expect(
+      screen.getByRole('heading', { name: 'No food options match these filters.' }),
+    ).toBeInTheDocument()
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 

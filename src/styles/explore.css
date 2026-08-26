@@ -71,31 +71,37 @@
   gap: var(--space-2);
 }
 
-.activity-explore {
+.activity-explore,
+.food-explore {
   display: grid;
   min-width: 0;
   gap: var(--space-5);
 }
 
-.activity-explore__header {
+.activity-explore__header,
+.food-explore__header {
   display: grid;
   gap: var(--space-1);
 }
 
 .activity-explore__header p,
-.activity-explore__count {
+.activity-explore__count,
+.food-explore__header p,
+.food-explore__count {
   margin: 0;
   color: var(--color-text-muted);
   font-size: 0.8125rem;
   font-weight: 650;
 }
 
-.activity-explore__header p {
+.activity-explore__header p,
+.food-explore__header p {
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
-.activity-filters {
+.activity-filters,
+.food-filters {
   display: grid;
   min-width: 0;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -105,7 +111,12 @@
   margin: 0;
 }
 
-.activity-filter {
+.food-filters {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.activity-filter,
+.food-filter {
   display: grid;
   min-width: 0;
   gap: var(--space-1);
@@ -116,13 +127,15 @@
   grid-column: 1 / -1;
 }
 
-.activity-filter > span {
+.activity-filter > span,
+.food-filter > span {
   color: var(--color-text-muted);
   font-size: 0.75rem;
   font-weight: 650;
 }
 
-.activity-filter select {
+.activity-filter select,
+.food-filter select {
   width: 100%;
   min-width: 0;
   min-height: var(--touch-target);
@@ -132,7 +145,8 @@
   background: var(--color-surface-elevated);
 }
 
-.activity-filters__favorites {
+.activity-filters__favorites,
+.food-filters__favorites {
   display: inline-flex;
   min-height: var(--touch-target);
   cursor: pointer;
@@ -150,7 +164,13 @@
   background: color-mix(in srgb, var(--color-category-activity) 40%, white);
 }
 
-.activity-list {
+.food-filters__favorites[aria-pressed='true'] {
+  border-color: color-mix(in srgb, var(--color-category-food) 76%, transparent);
+  background: color-mix(in srgb, var(--color-category-food) 34%, white);
+}
+
+.activity-list,
+.food-list {
   display: grid;
   min-width: 0;
   gap: var(--space-3);
@@ -159,7 +179,8 @@
   list-style: none;
 }
 
-.activity-card {
+.activity-card,
+.food-card {
   display: grid;
   width: 100%;
   min-width: 0;
@@ -177,15 +198,26 @@
     transform var(--motion-fast) ease;
 }
 
+.food-card {
+  border-color: color-mix(in srgb, var(--color-category-food) 66%, transparent);
+  background: color-mix(in srgb, var(--color-category-food) 11%, var(--color-surface));
+}
+
 .activity-card:hover {
   border-color: var(--color-category-activity);
 }
 
-.activity-card:active {
+.food-card:hover {
+  border-color: var(--color-category-food);
+}
+
+.activity-card:active,
+.food-card:active {
   transform: scale(0.99);
 }
 
-.activity-card__heading {
+.activity-card__heading,
+.food-card__heading {
   display: flex;
   min-width: 0;
   align-items: flex-start;
@@ -193,21 +225,25 @@
   gap: var(--space-3);
 }
 
-.activity-card__heading strong {
+.activity-card__heading strong,
+.food-card__heading strong {
   overflow-wrap: anywhere;
   font-size: 1rem;
 }
 
-.activity-card__favorite {
+.activity-card__favorite,
+.food-card__favorite {
   flex: 0 0 auto;
 }
 
-.activity-card__metadata {
+.activity-card__metadata,
+.food-card__metadata {
   color: var(--color-text-muted);
   font-size: 0.8125rem;
 }
 
-.activity-card__about {
+.activity-card__about,
+.food-card__about {
   display: -webkit-box;
   overflow: hidden;
   color: var(--color-text-muted);
@@ -216,19 +252,22 @@
   -webkit-line-clamp: 2;
 }
 
-.activity-empty {
+.activity-empty,
+.food-empty {
   display: grid;
   justify-items: start;
   gap: var(--space-3);
   padding: var(--space-5);
 }
 
-.activity-empty h3 {
+.activity-empty h3,
+.food-empty h3 {
   margin: 0;
   font-size: 1rem;
 }
 
-.activity-empty button {
+.activity-empty button,
+.food-empty button {
   min-height: var(--touch-target);
   cursor: pointer;
   padding: 0 var(--space-4);
@@ -236,6 +275,10 @@
   border-radius: var(--radius-pill);
   background: var(--color-category-activity);
   font-weight: 650;
+}
+
+.food-empty button {
+  background: var(--color-category-food);
 }
 
 @media (max-width: 22rem) {

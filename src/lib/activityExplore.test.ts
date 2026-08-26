@@ -3,9 +3,7 @@ import type { Activity } from '../types/trip'
 import {
   filterActivities,
   getActivityAreaOptions,
-  getActivityCityOptions,
   getActivityWeatherOptions,
-  getDefaultActivityCity,
   normalizeActivityExploreParams,
   readActivityExploreFilters,
   resetActivityExploreParams,
@@ -13,6 +11,10 @@ import {
   type ActivityExploreFilters,
   type ActivityTimeFilter,
 } from './activityExplore'
+import {
+  getDefaultExploreCity,
+  getExploreCityOptions,
+} from './exploreOptions'
 import {
   getActivitiesForCity,
   getAllActivities,
@@ -115,7 +117,7 @@ describe('Activity Explore filtering', () => {
 
 describe('Activity Explore generated options', () => {
   it('deduplicates stage cities in first-trip appearance order', () => {
-    const cities = getActivityCityOptions(getAllStages())
+    const cities = getExploreCityOptions(getAllStages())
 
     expect(cities.slice(0, 5)).toEqual([
       'Sendai',
@@ -144,12 +146,12 @@ describe('Activity Explore generated options', () => {
 
   it('resolves contextual city before, during, and after the trip', () => {
     const days = getAllDays()
-    const cities = getActivityCityOptions(getAllStages())
+    const cities = getExploreCityOptions(getAllStages())
 
-    expect(getDefaultActivityCity('2026-09-05', days, cities)).toBe('Sendai')
-    expect(getDefaultActivityCity('2026-09-15', days, cities)).toBe('Kamakura')
-    expect(getDefaultActivityCity('2026-09-18', days, cities)).toBe('Kyoto')
-    expect(getDefaultActivityCity('2026-10-10', days, cities)).toBe('Tokyo')
+    expect(getDefaultExploreCity('2026-09-05', days, cities)).toBe('Sendai')
+    expect(getDefaultExploreCity('2026-09-15', days, cities)).toBe('Kamakura')
+    expect(getDefaultExploreCity('2026-09-18', days, cities)).toBe('Kyoto')
+    expect(getDefaultExploreCity('2026-10-10', days, cities)).toBe('Tokyo')
   })
 })
 

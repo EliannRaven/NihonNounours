@@ -97,6 +97,10 @@ export function getFood(id: string): Food | undefined {
   return getRecordValue(tripData.food, id)
 }
 
+export function getAllFood(): Food[] {
+  return Object.values(tripData.food)
+}
+
 export function getTransport(id: string): Transport | undefined {
   return getRecordValue(tripData.transports, id)
 }

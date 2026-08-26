@@ -4,6 +4,7 @@ import {
   getActivity,
   getAllActivities,
   getAllDays,
+  getAllFood,
   getAllStages,
   getDay,
   getDefaultTripDate,
@@ -172,6 +173,14 @@ describe('collection selectors', () => {
     activities.pop()
 
     expect(getAllActivities()).toHaveLength(activityCount)
+  })
+
+  it('returns a new Food registry array', () => {
+    const food = getAllFood()
+    const foodCount = food.length
+    food.pop()
+
+    expect(getAllFood()).toHaveLength(foodCount)
   })
 
   it('filters Activities by trimmed case-insensitive city', () => {

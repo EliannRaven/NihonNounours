@@ -1,4 +1,4 @@
-import type { Activity, IsoDate, Stage, TripDay } from '../types/trip'
+import type { Activity } from '../types/trip'
 
 export type ActivityTimeFilter = 'all' | 'under-1h' | '1-2h' | 'half-day'
 
@@ -28,21 +28,6 @@ export function getWeatherKey(value: string) {
   return comparable(value).replace(/\s+/g, '-')
 }
 
-export function getActivityCityOptions(stages: readonly Stage[]): string[] {
-  const seen = new Set<string>()
-  const cities: string[] = []
-  for (const stage of stages) {
-    const city = normalizeText(stage.city)
-    if (!city) continue
-    const key = comparable(city)
-    if (!seen.has(key)) {
-      seen.add(key)
-      cities.push(city)
-    }
-  }
-  return cities
-}
-
 export function getActivityAreaOptions(
   activities: readonly Activity[],
 ): string[] {
@@ -70,36 +55,6 @@ export function getActivityWeatherOptions(
   }
   return [...options.values()].sort((first, second) =>
     first.label.localeCompare(second.label),
-  )
-}
-
-export function getDefaultActivityCity(
-  currentDate: IsoDate,
-  days: readonly TripDay[],
-  cityOptions: readonly string[],
-): string {
-  const firstDay = days[0]
-  const finalDay = days.at(-1)
-  const contextualDay =
-    firstDay && currentDate < firstDay.date
-      ? firstDay
-      : finalDay && currentDate > finalDay.date
-        ? finalDay
-        : days.find((day) => day.date === currentDate)
-  const contextualCity = normalizeText(contextualDay?.city)
-  return contextualCity ?? cityOptions[0] ?? ''
-}
-
-export function resolveActivityCity(
-  requestedCity: string | null,
-  cityOptions: readonly string[],
-  defaultCity: string,
-) {
-  const requested = normalizeText(requestedCity)
-  return (
-    (requested
-      ? cityOptions.find((city) => comparable(city) === comparable(requested))
-      : undefined) ?? defaultCity
   )
 }
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { PageContainer } from '../components/PageContainer'
 import { ActivityExplore } from '../components/explore/ActivityExplore'
+import { FoodExplore } from '../components/explore/FoodExplore'
 import {
   EntityBottomSheet,
   type EntitySheetSelection,
@@ -10,13 +11,10 @@ import { useTripNow } from '../components/today/todayTime'
 import {
   filterActivities,
   getActivityAreaOptions,
-  getActivityCityOptions,
   getActivityWeatherOptions,
-  getDefaultActivityCity,
   normalizeActivityExploreParams,
   readActivityExploreFilters,
   resetActivityExploreParams,
-  resolveActivityCity,
   updateActivityExploreParams,
   type ActivityExploreFilters,
 } from '../lib/activityExplore'
@@ -26,10 +24,27 @@ import {
   type ExploreMode,
 } from '../lib/exploreContext'
 import {
+  getDefaultExploreCity,
+  getExploreCityOptions,
+  resolveExploreCity,
+} from '../lib/exploreOptions'
+import {
+  filterFood,
+  getFoodAreaOptions,
+  getFoodCategoryOptions,
+  normalizeFoodExploreParams,
+  readFoodExploreFilters,
+  resetFoodExploreParams,
+  updateFoodExploreParams,
+  type FoodExploreFilters,
+} from '../lib/foodExplore'
+import {
   getActivitiesForCity,
   getAllActivities,
   getAllDays,
+  getAllFood,
   getAllStages,
+  getFoodForCity,
   getTrip,
 } from '../lib/tripData'
 
@@ -39,10 +54,10 @@ export function ExplorePage() {
   const context = readExploreContext(searchParams)
   const trip = getTrip()
   const tripNow = useTripNow(trip.timeZone)
-  const cityOptions = getActivityCityOptions(getAllStages())
+  const cityOptions = getExploreCityOptions(getAllStages())
+  const defaultCity = getDefaultExploreCity(tripNow.date, getAllDays(), cityOptions)
   const allActivities = getAllActivities()
-  const defaultCity = getDefaultActivityCity(tripNow.date, getAllDays(), cityOptions)
-  const activityCity = resolveActivityCity(context.city, cityOptions, defaultCity)
+  const activityCity = resolveExploreCity(context.city, cityOptions, defaultCity)
   const cityActivities = getActivitiesForCity(activityCity)
   const activityFilters = readActivityExploreFilters(
     searchParams,
@@ -54,78 +69,103 @@ export function ExplorePage() {
     searchParams,
     activityFilters,
   ).toString()
+  const allFood = getAllFood()
+  const foodCity = resolveExploreCity(context.city, cityOptions, defaultCity)
+  const cityFood = getFoodForCity(foodCity)
+  const foodFilters = readFoodExploreFilters(
+    searchParams,
+    foodCity,
+    cityFood,
+    allFood,
+  )
+  const normalizedFoodSearch = normalizeFoodExploreParams(
+    searchParams,
+    foodFilters,
+  ).toString()
   const currentSearch = searchParams.toString()
 
   useEffect(() => {
-    if (context.mode === 'activities' && currentSearch !== normalizedActivitySearch) {
-      setSearchParams(normalizedActivitySearch, { replace: true })
+    const normalizedSearch =
+      context.mode === 'activities'
+        ? normalizedActivitySearch
+        : normalizedFoodSearch
+    if (currentSearch !== normalizedSearch) {
+      setSearchParams(normalizedSearch, { replace: true })
     }
-  }, [context.mode, currentSearch, normalizedActivitySearch, setSearchParams])
+  }, [
+    context.mode,
+    currentSearch,
+    normalizedActivitySearch,
+    normalizedFoodSearch,
+    setSearchParams,
+  ])
 
   const selectMode = (mode: ExploreMode) => {
     setSearchParams(switchExploreMode(searchParams, mode))
   }
 
-  const updateFilters = (changes: Partial<ActivityExploreFilters>) => {
+  const updateActivityFilters = (changes: Partial<ActivityExploreFilters>) => {
     setSearchParams(updateActivityExploreParams(searchParams, changes))
   }
 
-  const foodContextValues = [context.city, context.area, context.category].filter(
-    (value): value is string => value !== null,
-  )
+  const updateFoodFilters = (changes: Partial<FoodExploreFilters>) => {
+    setSearchParams(updateFoodExploreParams(searchParams, changes))
+  }
 
   return (
     <>
       <PageContainer>
         <div className="explore-page">
-        <header className="explore-header">
-          <h1>Explore</h1>
-          <p>Choose what you feel like discovering.</p>
-        </header>
+          <header className="explore-header">
+            <h1>Explore</h1>
+            <p>Choose what you feel like discovering.</p>
+          </header>
 
-        <fieldset className="explore-mode">
-          <legend className="visually-hidden">Explore mode</legend>
-          <button
-            type="button"
-            aria-pressed={context.mode === 'activities'}
-            onClick={() => selectMode('activities')}
-          >
-            Activities
-          </button>
-          <button
-            type="button"
-            aria-pressed={context.mode === 'food'}
-            onClick={() => selectMode('food')}
-          >
-            Food
-          </button>
-        </fieldset>
+          <fieldset className="explore-mode">
+            <legend className="visually-hidden">Explore mode</legend>
+            <button
+              type="button"
+              aria-pressed={context.mode === 'activities'}
+              onClick={() => selectMode('activities')}
+            >
+              Activities
+            </button>
+            <button
+              type="button"
+              aria-pressed={context.mode === 'food'}
+              onClick={() => selectMode('food')}
+            >
+              Food
+            </button>
+          </fieldset>
 
-        {context.mode === 'activities' ? (
-          <ActivityExplore
-            filters={activityFilters}
-            cityOptions={cityOptions}
-            areaOptions={getActivityAreaOptions(cityActivities)}
-            weatherOptions={getActivityWeatherOptions(allActivities)}
-            activities={filterActivities(allActivities, activityFilters)}
-            onChangeFilters={updateFilters}
-            onResetFilters={() =>
-              setSearchParams(resetActivityExploreParams(searchParams, activityCity))
-            }
-            onOpenActivity={(id) => setSelection({ kind: 'activity', id })}
-          />
-        ) : (
-          <section className="explore-context" aria-labelledby="explore-context-title">
-            <h2 id="explore-context-title">Food</h2>
-            {foodContextValues.length > 0 ? (
-              <div className="explore-context__chips">
-                {foodContextValues.map((value) => (
-                  <span key={value} className="pill">{value}</span>
-                ))}
-              </div>
-            ) : null}
-          </section>
-        )}
+          {context.mode === 'activities' ? (
+            <ActivityExplore
+              filters={activityFilters}
+              cityOptions={cityOptions}
+              areaOptions={getActivityAreaOptions(cityActivities)}
+              weatherOptions={getActivityWeatherOptions(allActivities)}
+              activities={filterActivities(allActivities, activityFilters)}
+              onChangeFilters={updateActivityFilters}
+              onResetFilters={() =>
+                setSearchParams(resetActivityExploreParams(searchParams, activityCity))
+              }
+              onOpenActivity={(id) => setSelection({ kind: 'activity', id })}
+            />
+          ) : (
+            <FoodExplore
+              filters={foodFilters}
+              cityOptions={cityOptions}
+              areaOptions={getFoodAreaOptions(cityFood, foodFilters.area)}
+              categoryOptions={getFoodCategoryOptions(allFood)}
+              food={filterFood(allFood, foodFilters)}
+              onChangeFilters={updateFoodFilters}
+              onResetFilters={() =>
+                setSearchParams(resetFoodExploreParams(searchParams, foodCity))
+              }
+              onOpenFood={(id) => setSelection({ kind: 'food', id })}
+            />
+          )}
         </div>
       </PageContainer>
       <EntityBottomSheet selection={selection} onClose={() => setSelection(null)} />
