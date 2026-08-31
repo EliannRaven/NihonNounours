@@ -1,10 +1,8 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AppLayout } from './components/AppLayout'
 import { ExplorePage } from './pages/ExplorePage'
-import { MapPage } from './pages/MapPage'
 import { NotFoundPage } from './pages/NotFoundPage'
 import { TodayPage } from './pages/TodayPage'
-import { TripInfoPage } from './pages/TripInfoPage'
 import { TripPage } from './pages/TripPage'
 
 function App() {
@@ -16,8 +14,8 @@ function App() {
           <Route path="today" element={<TodayPage />} />
           <Route path="trip" element={<TripPage />} />
           <Route path="explore" element={<ExplorePage />} />
-          <Route path="map" element={<MapPage />} />
-          <Route path="info" element={<TripInfoPage />} />
+          <Route path="map" element={<Navigate to="/today" replace />} />
+          <Route path="info" element={<Navigate to="/today" replace />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>

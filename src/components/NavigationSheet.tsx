@@ -10,8 +10,6 @@ const destinations = [
   { label: 'Today', to: '/today' },
   { label: 'Trip', to: '/trip' },
   { label: 'Explore', to: '/explore' },
-  { label: 'Map', to: '/map' },
-  { label: 'Trip Info', to: '/info' },
 ] as const
 
 export function NavigationSheet({

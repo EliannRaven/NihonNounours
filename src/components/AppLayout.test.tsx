@@ -7,8 +7,6 @@ const routeHeadings = [
   { path: '/today', heading: 'Today' },
   { path: '/trip', heading: 'Trip' },
   { path: '/explore', heading: 'Explore' },
-  { path: '/map', heading: 'Map' },
-  { path: '/info', heading: 'Trip Info' },
 ]
 
 function renderLayout(initialEntry = '/today') {
@@ -91,10 +89,10 @@ describe('NavigationSheet', () => {
     ).toHaveAttribute('tabindex', '-1')
   })
 
-  it('wraps Tab from Trip Info to the close control', () => {
+  it('wraps Tab from Explore to the close control', () => {
     renderLayout()
     const dialog = openNavigation()
-    const lastLink = within(dialog).getByRole('link', { name: 'Trip Info' })
+    const lastLink = within(dialog).getByRole('link', { name: 'Explore' })
 
     lastLink.focus()
     fireEvent.keyDown(document, { key: 'Tab' })
@@ -104,13 +102,13 @@ describe('NavigationSheet', () => {
     ).toHaveFocus()
   })
 
-  it('wraps Shift+Tab from the close control to Trip Info', () => {
+  it('wraps Shift+Tab from the close control to Explore', () => {
     renderLayout()
     const dialog = openNavigation()
 
     fireEvent.keyDown(document, { key: 'Tab', shiftKey: true })
 
-    expect(within(dialog).getByRole('link', { name: 'Trip Info' })).toHaveFocus()
+    expect(within(dialog).getByRole('link', { name: 'Explore' })).toHaveFocus()
   })
 
   it('returns focus to the dialog if it reaches the hamburger while open', () => {
@@ -126,7 +124,7 @@ describe('NavigationSheet', () => {
     ).toHaveFocus()
   })
 
-  it('exposes exactly five primary destinations', () => {
+  it('exposes exactly the three MVP destinations', () => {
     renderLayout()
 
     const dialog = openNavigation()
@@ -134,17 +132,21 @@ describe('NavigationSheet', () => {
       name: 'Primary navigation',
     })
 
-    expect(within(navigation).getAllByRole('link')).toHaveLength(5)
+    expect(within(navigation).getAllByRole('link')).toHaveLength(3)
     expect(within(navigation).getAllByRole('link').map((link) => link.textContent))
-      .toEqual(['Today', 'Trip', 'Explore', 'Map', 'Trip Info'])
+      .toEqual(['Today', 'Trip', 'Explore'])
+    expect(
+      within(navigation).queryByRole('link', { name: 'Map' }),
+    ).not.toBeInTheDocument()
+    expect(
+      within(navigation).queryByRole('link', { name: 'Trip Info' }),
+    ).not.toBeInTheDocument()
   })
 
   it.each([
     ['Today', '/today'],
     ['Trip', '/trip'],
     ['Explore', '/explore'],
-    ['Map', '/map'],
-    ['Trip Info', '/info'],
   ])('%s points to %s', (label, route) => {
     renderLayout()
 

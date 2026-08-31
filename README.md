@@ -1,7 +1,8 @@
 # NihonNounours
 
-NihonNounours is a smartphone-first static travel companion for a Japan trip in
-September and October 2026.
+NihonNounours is a smartphone-first static travel companion for the Japan 2026
+trip. Its MVP combines the daily journey, the overall itinerary, and authored
+Activity and Food discovery in one mobile-focused React application.
 
 ## Technical stack
 
@@ -12,11 +13,36 @@ September and October 2026.
 - CSS
 - Vitest and React Testing Library
 
-## Current status
+## MVP status
 
-The project currently provides the technical frontend foundation plus the
-Python validation and normalized-data build pipeline. React does not consume
-the generated trip data yet, and the travel features are not implemented.
+The MVP is feature-complete before deployment.
+
+Implemented:
+
+- Excel validation and normalized JSON build pipeline
+- Typed React data layer
+- Today journey view
+- Trip overview
+- Explore Activities and Explore Food
+- Shared Activity, Food, Hotel, and Transport detail sheets
+- Smartphone-first navigation
+
+Deferred until after the production MVP is deployed and tested:
+
+- Map
+- Trip Info
+- PWA and offline support
+- Live weather
+
+Deployment is not configured yet.
+
+## MVP routes
+
+- `/today` — daily journey, timeline, NOW, NEXT, and flexible discovery
+- `/trip` — complete journey and stage overview
+- `/explore` — Activities and Food catalogues
+
+The deferred `/map` and `/info` routes currently redirect to `/today`.
 
 ## Getting started
 
@@ -38,7 +64,7 @@ Create a type-checked production build:
 npm run build
 ```
 
-Run the smoke test:
+Run the frontend test suite:
 
 ```bash
 npm run test
@@ -100,8 +126,8 @@ tests/python/        Python validation and builder tests
 
 ## Data architecture
 
-`data/InputData_v2.xlsx` is the authoring source for future application data.
-The intended flow is:
+`data/InputData_v2.xlsx` is the application authoring source. The production
+data flow is:
 
 ```text
 Excel
